@@ -154,9 +154,9 @@ class BaseDialog(QDialog, Ui_BaseDialog):
                 self.GEE = BaseDialog_GEE(self.iface)
                 self.GEE.setWindowFlags(
                     Qt.WindowSystemMenuHint
-                    | Qt.MSWindowsFixedSizeDialogHint
                     | Qt.WindowTitleHint
                     | Qt.WindowMinimizeButtonHint
+                    | Qt.Dialog
                 )
                 # Call a function of the other class
                 self.GEE.InitialWindow()
@@ -201,27 +201,27 @@ class BaseDialog(QDialog, Ui_BaseDialog):
                 os.makedirs(folder)
                 self.labelPath.setText(folder)
 
-                path1 = folder + "\MapSWAT"
+                path1 = os.path.join(folder, "MapSWAT")
                 os.makedirs(path1, exist_ok=True)
-                path2 = folder + "\MapSWAT\WGS84"
+                path2 = os.path.join(folder, "MapSWAT", "WGS84")
                 os.makedirs(path2, exist_ok=True)
-                path3 = folder + "\MapSWAT\WGS84\CLIPPED"
+                path3 = os.path.join(folder, "MapSWAT", "WGS84", "CLIPPED")
                 os.makedirs(path3, exist_ok=True)
-                path4 = folder + "\MapSWAT\SWAT_INPUT_MAPS"
+                path4 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS")
                 os.makedirs(path4, exist_ok=True)
-                path6 = folder + "\MapSWAT\SWAT_INPUT_MAPS\DEM"
+                path6 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "DEM")
                 os.makedirs(path6, exist_ok=True)
-                path7 = folder + "\MapSWAT\SWAT_INPUT_MAPS\LANDUSE"
+                path7 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "LANDUSE")
                 os.makedirs(path7, exist_ok=True)
-                path8 = folder + "\MapSWAT\SWAT_INPUT_MAPS\SOIL"
+                path8 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "SOIL")
                 os.makedirs(path8, exist_ok=True)
-                path9 = folder + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS"
+                path9 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS")
                 os.makedirs(path9, exist_ok=True)
-                path10 = folder + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\OUTLET"
+                path10 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "OUTLET")
                 os.makedirs(path10, exist_ok=True)
-                path11 = folder + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\POLYGON"
+                path11 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "POLYGON")
                 os.makedirs(path11, exist_ok=True)
-                path12 = folder + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\MERGE"
+                path12 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "MERGE")
                 os.makedirs(path12, exist_ok=True)
 
             except:
@@ -469,19 +469,15 @@ class BaseDialog(QDialog, Ui_BaseDialog):
             "OPTIONS": "",
             "EXTRA": "",
             "DATA_TYPE": 5,
-            "OUTPUT": FolderPath
-            + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\MERGE\DEM_merge.tif",
+            "OUTPUT": os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "MERGE", "DEM_merge.tif"),
         }
 
         processing.run("gdal:merge", params)
 
-        if os.path.isfile(
-            FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\MERGE\DEM_merge.tif"
-        ):
+        merge_dem_path = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "MERGE", "DEM_merge.tif")
+        if os.path.isfile(merge_dem_path):
             # Copy path in FileWidget_DEM
-            self.mQgsFileWidget_DEM.setFilePath(
-                FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\MERGE\DEM_merge.tif"
-            )
+            self.mQgsFileWidget_DEM.setFilePath(merge_dem_path)
 
             self.checkBox_DEM.setChecked(True)
             self.progressBar.setValue(100)
@@ -717,12 +713,12 @@ class BaseDialog(QDialog, Ui_BaseDialog):
                 "TARGET_EXTENT_CRS": None,
                 "MULTITHREADING": False,
                 "EXTRA": "",
-                "OUTPUT": FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\SOIL\SOIL.tif",
+                "OUTPUT": os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "SOIL", "SOIL.tif"),
             }
             processing.run("gdal:warpreproject", params2)
 
             # Adding clipped and reprojected SOIL to QGIS
-            fileName = FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\SOIL\SOIL.tif"
+            fileName = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "SOIL", "SOIL.tif")
             fileInfo = QFileInfo(fileName)
             baseName = fileInfo.baseName()
             SOIL = QgsRasterLayer(fileName, baseName)
@@ -764,7 +760,7 @@ class BaseDialog(QDialog, Ui_BaseDialog):
 
             # Create CSV with raster layer data
             with open(
-                FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\SOIL\Soil_lookup.csv",
+                os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "SOIL", "Soil_lookup.csv"),
                 "w",
                 newline="",
             ) as csvfile:
@@ -823,12 +819,12 @@ class BaseDialog(QDialog, Ui_BaseDialog):
                 "TARGET_EXTENT_CRS": None,
                 "MULTITHREADING": False,
                 "EXTRA": "",
-                "OUTPUT": FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\LANDUSE\LANDUSE.tif",
+                "OUTPUT": os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "LANDUSE", "LANDUSE.tif"),
             }
             processing.run("gdal:warpreproject", params2)
 
             # Adding clipped and reprojected LANDUSE to QGIS
-            fileName = FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\LANDUSE\LANDUSE.tif"
+            fileName = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "LANDUSE", "LANDUSE.tif")
             fileInfo = QFileInfo(fileName)
             baseName = fileInfo.baseName()
             LANDUSE = QgsRasterLayer(fileName, baseName)
@@ -871,7 +867,7 @@ class BaseDialog(QDialog, Ui_BaseDialog):
 
             # Create CSV with raster layer data
             with open(
-                FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\LANDUSE\Landuse_lookup.csv",
+                os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "LANDUSE", "Landuse_lookup.csv"),
                 "w",
                 newline="",
             ) as csvfile:
@@ -931,12 +927,12 @@ class BaseDialog(QDialog, Ui_BaseDialog):
                 "TARGET_EXTENT_CRS": None,
                 "MULTITHREADING": False,
                 "EXTRA": "",
-                "OUTPUT": FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\DEM\DEM.tif",
+                "OUTPUT": os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "DEM", "DEM.tif"),
             }
             processing.run("gdal:warpreproject", params2)
 
             # Adding clipped and reprojected DEM to QGIS
-            fileName = FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\DEM\DEM.tif"
+            fileName = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "DEM", "DEM.tif")
             fileInfo = QFileInfo(fileName)
             baseName = fileInfo.baseName()
             DEM = QgsRasterLayer(fileName, baseName)
@@ -953,14 +949,13 @@ class BaseDialog(QDialog, Ui_BaseDialog):
             params3 = {
                 "INPUT": FolderPath + "/MapSWAT/WGS84/OUTLET_WGS84.shp",
                 "TARGET_CRS": crs_target,
-                "OUTPUT": FolderPath
-                + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\OUTLET\OUTLET.shp",
+                "OUTPUT": os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "OUTLET", "OUTLET.shp"),
             }
             processing.run("native:reprojectlayer", params3)
 
             # Adding OUTLET reprojected to QGIS
             layer = QgsVectorLayer(
-                FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\OUTLET\OUTLET.shp",
+                os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "OUTLET", "OUTLET.shp"),
                 "OUTLET",
                 "ogr",
             )
@@ -985,7 +980,7 @@ class BaseDialog(QDialog, Ui_BaseDialog):
 
     def Open(self):
         FolderPath = self.labelPath.text()
-        webbrowser.open(FolderPath + "\MapSWAT\SWAT_INPUT_MAPS")
+        webbrowser.open(os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS"))
 
     def Close(self):
         reply = QMessageBox.question(

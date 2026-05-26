@@ -141,29 +141,29 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
                 os.makedirs(folder)
                 self.labelPath.setText(folder)
 
-                path1 = folder + "\MapSWAT"
+                path1 = os.path.join(folder, "MapSWAT")
                 os.makedirs(path1, exist_ok=True)
-                path2 = folder + "\MapSWAT\WGS84"
+                path2 = os.path.join(folder, "MapSWAT", "WGS84")
                 os.makedirs(path2, exist_ok=True)
-                path3 = folder + "\MapSWAT\WGS84\CLIPPED"
+                path3 = os.path.join(folder, "MapSWAT", "WGS84", "CLIPPED")
                 os.makedirs(path3, exist_ok=True)
-                path4 = folder + "\MapSWAT\SWAT_INPUT_MAPS"
+                path4 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS")
                 os.makedirs(path4, exist_ok=True)
-                path6 = folder + "\MapSWAT\SWAT_INPUT_MAPS\DEM"
+                path6 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "DEM")
                 os.makedirs(path6, exist_ok=True)
-                path7 = folder + "\MapSWAT\SWAT_INPUT_MAPS\LANDUSE"
+                path7 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "LANDUSE")
                 os.makedirs(path7, exist_ok=True)
-                path8 = folder + "\MapSWAT\SWAT_INPUT_MAPS\SOIL"
+                path8 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "SOIL")
                 os.makedirs(path8, exist_ok=True)
-                path9 = folder + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS"
+                path9 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS")
                 os.makedirs(path9, exist_ok=True)
-                path10 = folder + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\OUTLET"
+                path10 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "OUTLET")
                 os.makedirs(path10, exist_ok=True)
-                path11 = folder + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\POLYGON"
+                path11 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "POLYGON")
                 os.makedirs(path11, exist_ok=True)
-                path12 = folder + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\MERGE"
+                path12 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "MERGE")
                 os.makedirs(path12, exist_ok=True)
-                path13 = folder + "\MapSWAT\SWAT_INPUT_MAPS\GWFLOW"
+                path13 = os.path.join(folder, "MapSWAT", "SWAT_INPUT_MAPS", "GWFLOW")
                 os.makedirs(path13, exist_ok=True)
             except:
                 self.close()
@@ -597,7 +597,7 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
         self.progressBar.setValue(10)
 
         if self.checkBox_Landuse.isChecked():
-            LULCpath = FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\LANDUSE"
+            LULCpath = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "LANDUSE")
 
             LULCfile = self.comboBox_LANDUSE.currentText()
 
@@ -754,9 +754,7 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
             # QMessageBox.information(None, "LULC URL", str(LULC_values))
 
             # Create the CSV file
-            csv_path = (
-                FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\LANDUSE\Landuse_lookup.csv"
-            )
+            csv_path = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "LANDUSE", "Landuse_lookup.csv")
             # json_path = os.path.join(self.plugin_dir, 'resources/LULC_GlobCover.json')
             LULC_sorted_values = sorted(LULC_values)
 
@@ -792,7 +790,7 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
                 writer.writerows(rows)
 
         if self.checkBox_Soil.isChecked():
-            SOILpath = FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\SOIL"
+            SOILpath = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "SOIL")
 
             SOILfile = self.comboBox_SOIL.currentText()
 
@@ -904,7 +902,7 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
 
             SOIL_sorted_values = sorted(SOIL_values)
 
-            csv_path = FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\SOIL\Soil_lookup.csv"
+            csv_path = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "SOIL", "Soil_lookup.csv")
             with open(csv_path, "w", newline="") as csvfile:
                 filewriter = csv.writer(csvfile)
                 filewriter.writerow(["SOIL_ID", "SNAM"])
@@ -939,12 +937,12 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
             soil_taxonomy = os.path.join(
                 self.plugin_dir, "resources/DSOLMap_taxonomy.csv"
             )
-            SOILpath = FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\SOIL"
+            SOILpath = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "SOIL")
             shutil.copy(soil_usersoil, SOILpath)
             shutil.copy(soil_taxonomy, SOILpath)
 
         if self.checkBox_DEM.isChecked():
-            DEMpath = FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\DEM"
+            DEMpath = os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "DEM")
 
             DEMfile = self.comboBox_DEM.currentText()
 
@@ -1051,14 +1049,13 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
             params3 = {
                 "INPUT": FolderPath + "/MapSWAT/WGS84/OUTLET_WGS84.shp",
                 "TARGET_CRS": crs_target,
-                "OUTPUT": FolderPath
-                + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\OUTLET\OUTLET.shp",
+                "OUTPUT": os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "OUTLET", "OUTLET.shp"),
             }
             processing.run("native:reprojectlayer", params3)
 
             # Añadir OUTLET reproyectado a QGIS
             layer = QgsVectorLayer(
-                FolderPath + "\MapSWAT\SWAT_INPUT_MAPS\INFO_GIS\OUTLET\OUTLET.shp",
+                os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS", "INFO_GIS", "OUTLET", "OUTLET.shp"),
                 "OUTLET",
                 "ogr",
             )
@@ -1327,7 +1324,7 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
 
     def Open(self):
         FolderPath = self.labelPath.text()
-        webbrowser.open(FolderPath + "\MapSWAT\SWAT_INPUT_MAPS")
+        webbrowser.open(os.path.join(FolderPath, "MapSWAT", "SWAT_INPUT_MAPS"))
 
     def Close(self):
         reply = QMessageBox.question(

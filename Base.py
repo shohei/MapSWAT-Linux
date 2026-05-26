@@ -50,9 +50,9 @@ class Base:
         self.dlg = BaseDialog(self.iface)
         self.dlg.setWindowFlags(
             Qt.WindowSystemMenuHint
-            | Qt.MSWindowsFixedSizeDialogHint
             | Qt.WindowTitleHint
             | Qt.WindowMinimizeButtonHint
+            | Qt.Dialog
         )
         # self.dlg.show()
         self.dlg.SelectionWindow()
