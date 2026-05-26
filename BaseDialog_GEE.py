@@ -283,9 +283,20 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
         self.canvas.refresh()
 
     def GetMaps(self):
-        if self.lineX.isModified() and self.lineY.isModified():
+        FolderPath = self.labelPath.text()
+        outlet_path = os.path.join(FolderPath, "MapSWAT", "WGS84", "OUTLET_WGS84.shp")
+        outlet_exists = os.path.exists(outlet_path)
+
+        if self.lineX.isModified() and self.lineY.isModified() and outlet_exists:
             self.pushButton_BUFFER.setEnabled(True)
             self.pushButton_AUTOBASIN.setEnabled(True)
+        elif self.lineX.text() and self.lineY.text() and not outlet_exists:
+            QMessageBox.information(
+                None,
+                "Add Point first",
+                "X and Y coordinates are entered but the outlet has not been added yet.\n"
+                "Please click 'Add Point' before 'Get Maps' to use BUFFER or AUTOBASIN.",
+            )
 
         if self.checkBox_DEM.isChecked():
             self.pushButton_MANUAL.setEnabled(True)
@@ -476,6 +487,15 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
 
         FolderPath = self.labelPath.text()
 
+        outlet_path = os.path.join(FolderPath, "MapSWAT", "WGS84", "OUTLET_WGS84.shp")
+        if not os.path.exists(outlet_path):
+            QMessageBox.warning(
+                None,
+                "Outlet not found",
+                "Please add an outlet point first by entering X, Y coordinates and clicking 'Add Point'.",
+            )
+            return
+
         if QgsProject.instance().mapLayersByName("GEE Mask Layer"):
             # Select layer
             buffer = QgsProject.instance().mapLayersByName("GEE Mask Layer")[0]
@@ -488,20 +508,26 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
         # self.pushButton_AUTOBASIN.setEnabled(False)
         self.pushButton_SWATinputs.setEnabled(True)
 
-        buffer = float(self.lineBuffer.text()) * 1000
+        try:
+            buffer = float(self.lineBuffer.text()) * 1000
+        except ValueError:
+            QMessageBox.warning(None, "Buffer error", "Please enter a valid buffer distance.")
+            return
 
         # Add OUTLET to QGIS
-        layer = QgsVectorLayer(
-            FolderPath + r"/MapSWAT/WGS84/OUTLET_WGS84.shp", "OUTLET", "ogr"
-        )
+        layer = QgsVectorLayer(outlet_path, "OUTLET", "ogr")
 
+        coords = None
         for feature in layer.getFeatures():
             # Get the geometry of the feature
             geom = feature.geometry()
             if geom.type() == QgsWkbTypes.PointGeometry:
                 pointCoords = geom.asPoint()
                 coords = [pointCoords.x(), pointCoords.y()]
-                # QMessageBox.information(None, "Polygon", str(coords))
+
+        if coords is None:
+            QMessageBox.warning(None, "Outlet error", "Could not read outlet coordinates from shapefile.")
+            return
 
         point = ee.Geometry.Point(coords)
         bufferedPoint = point.buffer(buffer)
@@ -520,6 +546,15 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
         from ee_plugin import Map
 
         FolderPath = self.labelPath.text()
+
+        outlet_path = os.path.join(FolderPath, "MapSWAT", "WGS84", "OUTLET_WGS84.shp")
+        if not os.path.exists(outlet_path):
+            QMessageBox.warning(
+                None,
+                "Outlet not found",
+                "Please add an outlet point first by entering X, Y coordinates and clicking 'Add Point'.",
+            )
+            return
 
         if QgsProject.instance().mapLayersByName("GEE Mask Layer"):
             # Select layer
@@ -545,18 +580,24 @@ class BaseDialog_GEE(QDialog, Ui_BaseDialog_GEE):
             basin = ee.FeatureCollection("WWF/HydroSHEDS/v1/Basins/hybas_11")
         elif T == "HydroSHEDS Basins L-12":
             basin = ee.FeatureCollection("WWF/HydroSHEDS/v1/Basins/hybas_12")
+        else:
+            QMessageBox.warning(None, "Autobasin error", "Please select a HydroSHEDS basin level.")
+            return
 
         # Add OUTLET to QGIS
-        layer = QgsVectorLayer(
-            FolderPath + r"/MapSWAT/WGS84/OUTLET_WGS84.shp", "OUTLET", "ogr"
-        )
+        layer = QgsVectorLayer(outlet_path, "OUTLET", "ogr")
+        coords = None
         for feature in layer.getFeatures():
             # Get the geometry of the feature
             geom = feature.geometry()
             if geom.type() == QgsWkbTypes.PointGeometry:
                 pointCoords = geom.asPoint()
                 coords = [pointCoords.x(), pointCoords.y()]
-                # QMessageBox.information(None, "Polygon", str(coords))
+
+        if coords is None:
+            QMessageBox.warning(None, "Outlet error", "Could not read outlet coordinates from shapefile.")
+            return
+
         point = ee.Geometry.Point(coords)
         selectedBasin = basin.filterBounds(point)
 
