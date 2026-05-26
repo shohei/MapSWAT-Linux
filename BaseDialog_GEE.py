@@ -25,7 +25,7 @@ from qgis.gui import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-from MapSWAT_v3.gui.generated.ui_dialog_GEE import Ui_BaseDialog_GEE
+from .gui.generated.ui_dialog_GEE import Ui_BaseDialog_GEE
 
 from qgis.gui import QgsMapToolEmitPoint
 from qgis.core import QgsProject, QgsRasterLayer

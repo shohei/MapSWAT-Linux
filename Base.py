@@ -25,7 +25,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import QAction
 from .BaseDialog import BaseDialog
-import MapSWAT_v3.gui.generated.resources_rc
+from .gui.generated import resources_rc
 
 
 class Base:

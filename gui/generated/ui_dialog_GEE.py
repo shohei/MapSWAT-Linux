@@ -470,4 +470,4 @@ class Ui_BaseDialog_GEE(object):
 
 from qgsfilewidget import QgsFileWidget
 from qgsprojectionselectionwidget import QgsProjectionSelectionWidget
-from MapSWAT_v3.gui.generated import resources_rc
+from . import resources_rc

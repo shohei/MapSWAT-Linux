@@ -25,7 +25,7 @@ from qgis.gui import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-from MapSWAT_v3.gui.generated.ui_dialog import Ui_BaseDialog
+from .gui.generated.ui_dialog import Ui_BaseDialog
 
 from qgis.gui import QgsMapToolEmitPoint
 from qgis.core import QgsProject, QgsRasterLayer
@@ -51,7 +51,7 @@ import webbrowser
 import csv
 import json
 
-from MapSWAT_v3.BaseDialog_GEE import BaseDialog_GEE
+from .BaseDialog_GEE import BaseDialog_GEE
 
 
 class BaseDialog(QDialog, Ui_BaseDialog):
